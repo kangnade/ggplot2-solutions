@@ -22,16 +22,15 @@ names(mpg)
 ```
 
 2. How can you find out what other datasets are included with ggplot2?
-```{r e.2.2.1.2}
-dfs <- data(package = "ggplot2")
-dfs
+```{r e.2.2.1.2, eval=TRUE}
+data(package = "ggplot2")
 ```
 
 3. Apart from the US, most countries use fuel consumption (fuel consumed
 over fixed distance) rather than fuel economy (distance travelled with fixed
 amount of fuel). How could you convert cty and hwy into the European
 standard of l/100km?
-```{r e.2.2.1.3}
+```{r e.2.2.1.3, eval=TRUE}
 head(mpg)
 mpg_km <- mpg %>%
   mutate(cty_l100km = cty * 235.215,
