@@ -1,0 +1,54 @@
+---
+title: "ggplot2_chapter2"
+author: "Nade Kang"
+date: "July 6, 2018"
+output: html_document
+---
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 2 Getting Started with ggplot2
+
+## Exercise 2.2.1
+### Load Packages
+```{r setup}
+library(tidyverse)
+```
+1. List five functions that you could use to get more information about the mpg dataset.
+```{r e.2.2.1.1, eval=FALSE}
+View(mpg)
+head(mpg)
+tail(mpg)
+dim(mpg)
+names(mpg)
+```
+
+2. How can you find out what other datasets are included with ggplot2?
+```{r e.2.2.1.2}
+dfs <- data(package = "ggplot2")
+dfs
+```
+
+3. Apart from the US, most countries use fuel consumption (fuel consumed
+over fixed distance) rather than fuel economy (distance travelled with fixed
+amount of fuel). How could you convert cty and hwy into the European
+standard of l/100km?
+```{r e.2.2.1.3}
+head(mpg)
+mpg_km <- mpg %>%
+  mutate(cty_l100km = cty * 235.215,
+         hwy_l100lm = hwy * 235.215)
+mpg_km %>% select(cty:hwy_l100lm)
+```
+4. Which manufacturer has the most the models in this dataset?Which model
+has the most variations? Does your answer change if you remove the redundant
+specification of drive train (e.g. “pathfinder 4wd”, “a4 quattro”)
+from the model name?
+
+Manufacturer with the most models
+```{r}
+mpg %>%
+  group_by(manufacturer) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+```
+As you can see, Dodge has the most models, a number of 37.
+
