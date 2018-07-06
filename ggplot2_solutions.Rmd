@@ -30,7 +30,7 @@ data(package = "ggplot2")
 over fixed distance) rather than fuel economy (distance travelled with fixed
 amount of fuel). How could you convert cty and hwy into the European
 standard of l/100km?
-```{r e.2.2.1.3, eval=TRUE}
+```{r e.2.2.1.3}
 head(mpg)
 mpg_km <- mpg %>%
   mutate(cty_l100km = cty * 235.215,
