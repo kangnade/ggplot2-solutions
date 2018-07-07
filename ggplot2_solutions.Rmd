@@ -228,6 +228,106 @@ library(mgcv)
 library(MASS)
 ```
 
+## Exercises 2.6.6
+**_Question 1_** What’s the problem with the plot created by ggplot(mpg, aes(cty, hwy))
++ geom point()? Which of the geoms described above is most effective at
+remedying the problem?
+
+```{r e.2.6.6.1_plot1}
+ggplot(mpg, aes(cty, hwy)) +
+  geom_point()
+```
+
+The problem with this plot is that, there is overplotting, so that this graph doesn't show all the
+availble data points in the dataset.
+
+The solution to this problem is to use geom_jitter().
+```{r e.2.6.6.1_plot2}
+ggplot(mpg, aes(cty, hwy)) +
+  geom_jitter()
+```
+
+**_Question 2_** One challenge with ggplot(mpg, aes(class, hwy)) + geom boxplot() is that
+the ordering of class is alphabetical, which is not terribly useful. How
+could you change the factor levels to be more informative?
+Rather than reordering the factor by hand, you can do it automatically
+based on the data: ggplot(mpg, aes(reorder(class, hwy), hwy)) +
+geom boxplot(). What does reorder() do? Read the documentation.
+
+You can check reorder() using:
+```{r e.2.6.6.2, eval=FALSE}
+?reorder
+```
+
+reorder is a generic function. The "default" method treats its first argument as a categorical variable, 
+and reorders its levels based on the values of a second variable, usually numeric.
+
+**_Question 3_** Explore the distribution of the carat variable in the diamonds dataset. What
+binwidth reveals the most interesting patterns?
+
+We can generate several plots with different binwidth:
+```{r e.2.6.6.3_plot1}
+ggplot(diamonds, aes(carat)) +
+  geom_bar(binwidth = 1) +
+  ggtitle(expression(atop("Carat Barplot with", "binwidth = 1"))) +
+  xlab("Carat") +
+  ylab("Count/Number") +
+  theme(plot.title = element_text(hjust = 0.5), title = element_text(size = 14),
+        text = element_text(size = 9))
+```
+
+As we change the binwidth:
+```{r e.2.6.6.3_plot2}
+ggplot(diamonds, aes(carat)) +
+  geom_histogram(binwidth = 0.5) +
+  ggtitle(expression(atop("Carat Barplot with", "binwidth = 0.5"))) +
+  xlab("Carat") +
+  ylab("Count/Number") +
+  theme(plot.title = element_text(hjust = 0.5), title = element_text(size = 14),
+        text = element_text(size = 9))
+```
+
+```{r r e.2.6.6.3_plot3}
+ggplot(diamonds, aes(x = carat)) +
+  geom_histogram(binwidth = 0.01) +
+  ggtitle(expression(atop("Carat Barplot with", "binwidth = 0.01"))) +
+  xlim(0.3, 3) +
+  xlab("Carat") +
+  ylab("Count/Number") +
+  theme(plot.title = element_text(hjust = 0.5), title = element_text(size = 14),
+        text = element_text(size = 9))
+```
+
+I am not familiar with diamonds industry, but the pattern looks interesting and there must be
+a reason for this pattern.
+
+**_Question 4_** Explore the distribution of the price variable in the diamonds data. How
+does the distribution vary by cut?
+
+To check this::
+```{r e.2.6.6.4_plot1}
+ggplot(diamonds, aes(x = cut, y = price, color = cut)) +
+  geom_boxplot()
+```
+
+```{r e.2.6.6.4_plot2}
+ggplot(diamonds, aes(x = price, y =..density.., color = cut)) +
+  geom_freqpoly(binwidth = 200)
+```
 
 
-**_Question 2_**
+Fair cut diamonds have higher price than very good cut. One of the reasons could be
+these fair diamonds are big in terms of their sizes, so people are likely to spend
+money for the size than for the cut, because not everyone is an expert in diamonds.
+
+**_Question 5_** You now know (at least) three ways to compare the distributions of
+subgroups: geom violin(), geom freqpoly() and the colour aesthetic, or
+geom histogram() and facetting. What are the strengths and weaknesses
+of each approach? What other approaches could you try?
+
+The strengths and weaknesses are discussed in the chapter already.
+
+**_Question 6_** Read the documentation for geom bar().What does the weight aesthetic do?
+There are two types of bar charts: geom_bar makes the height of the bar proportional to the number of cases in each group (or if the weight aethetic is supplied, the sum of the weights). If you want the heights of the bars to represent values in the data, use geom_col instead. geom_bar uses stat_count by default: it counts the number of cases at each x position. geom_col uses stat_identity: it leaves the data as is.
+
+**_END OF CHAPTER 2 EXERCISES_**
