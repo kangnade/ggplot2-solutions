@@ -7,12 +7,12 @@ output: html_document
 # Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
 # ggplot2 Chpater 2 Getting Started with ggplot2
 
-## Exercise 2.2.1
+## *Exercise 2.2.1*
 ### Load Packages
 ```{r setup}
 library(tidyverse)
 ```
-1. List five functions that you could use to get more information about the mpg dataset.
+**_Question 1_** List five functions that you could use to get more information about the mpg dataset.
 ```{r e.2.2.1.1, eval=FALSE}
 View(mpg)
 head(mpg)
@@ -21,12 +21,12 @@ dim(mpg)
 names(mpg)
 ```
 
-2. How can you find out what other datasets are included with ggplot2?
-```{r e.2.2.1.2, eval=TRUE}
+**_Question 2_** How can you find out what other datasets are included with ggplot2?
+```{r e.2.2.1.2}
 data(package = "ggplot2")
 ```
 
-3. Apart from the US, most countries use fuel consumption (fuel consumed
+**_Question 3_** Apart from the US, most countries use fuel consumption (fuel consumed
 over fixed distance) rather than fuel economy (distance travelled with fixed
 amount of fuel). How could you convert cty and hwy into the European
 standard of l/100km?
@@ -37,13 +37,13 @@ mpg_km <- mpg %>%
          hwy_l100lm = hwy * 235.215)
 mpg_km %>% select(cty:hwy_l100lm)
 ```
-4. Which manufacturer has the most the models in this dataset?Which model
+**_Question 4_** Which manufacturer has the most the models in this dataset?Which model
 has the most variations? Does your answer change if you remove the redundant
 specification of drive train (e.g. “pathfinder 4wd”, “a4 quattro”)
 from the model name?
 
 Manufacturer with the most models
-```{r}
+```{r e.2.2.1.4_mostmodels}
 mpg %>%
   group_by(manufacturer) %>%
   summarise(n = n()) %>%
@@ -51,3 +51,183 @@ mpg %>%
 ```
 As you can see, Dodge has the most models, a number of 37.
 
+The model that has the most variations :
+```{r e.2.2.1.4_mostvariations}
+unique(mpg$model)
+```
+
+It seems that camry has the most model variations.
+To remove the redundant specification:
+```{r e.2.2.1.4_mostvarrm}
+library(stringr)
+str_trim(str_replace_all(unique(mpg$model), c("quattro" = "", "4wd" = "",
+                                              "2wd" = "", "awd" = "")))
+```
+Still, it seems camry has the most model variation after removing redundancy.
+
+## *Exercise 2.3.1*
+**_Question 1_** How would you describe the relationship between cty and hwy? Do you
+have any concerns about drawing conclusions from that plot?
+To understand the relationship, we need to make a plot:
+```{r e.2.3.1.1_cty_hwy_plot}
+ggplot(mpg, aes(x = cty, y = hwy)) +
+  geom_point()
+```
+
+It appears that there is a positive linear relationship between cty and hwy. 
+
+**_Question 2_** What does ggplot(mpg, aes(model, manufacturer)) + geom point() show? Is it useful? How could 
+you modify the data to make it more informative?
+```{r e.2.3.1.2_manu_model_plot}
+ggplot(mpg, aes(model, manufacturer)) +
+  geom_point()
+```
+This plot has problems. First, the x-axis names in model are too long, that the plot doesn't
+show all the full names. This makes it impossible for people to understand. Second, this plot
+doesn't really help people understand the relationship between model and manufacturer for the
+manufacturer may have several models such as e.g. audi and camry.
+
+A better approach is to check a manufacturer+model combination count
+```{r e.2.3.1.2_manu_model}
+df <- mpg %>%
+  mutate(manuModel = paste(manufacturer, model, sep = " "))
+
+df  %>%
+  select(manufacturer, model, manuModel)
+
+ggplot(df, aes(x = manuModel)) +
+  geom_bar() +
+  coord_flip()
+```
+
+**_Question 3_** Describe the data, aesthetic mappings and layers used for each of the
+following plots. You’ll need to guess a little because you haven’t seen all
+the datasets and functions yet, but use your common sense! See if you can
+predict what the plot will look like before running the code.
+
+1. ggplot(mpg, aes(cty, hwy)) + geom point()
+2. ggplot(diamonds, aes(carat, price)) + geom point()
+3. ggplot(economics, aes(date, unemploy)) + geom line()
+4. ggplot(mpg, aes(cty)) + geom histogram()
+
+```{r e.2.3.1.3_summry_plot}
+summary(ggplot(mpg, aes(cty, hwy)) + geom_point())
+```
+As you can see, we can use summary() function to get full details about a chunk of
+plot codes. But in general, the codes above has one dataset, mapping to two variables
+in that data set, and has one layer of plots.
+
+## *Exercises 2.4.1*
+**_Question 1_** Experiment with the colour, shape and size aesthetics. What happens when you map 
+them to continuous values? What about categorical values? What happens when you use 
+more than one aesthetic in a plot?
+Using mpg dataset as an example, first I map color, shape, and size to continuous 
+variables:
+```{r e.2.4.1.1_plot1}
+ggplot(mpg, aes(cty, hwy, color = +displ)) +
+  geom_jitter()
+```
+What you get is a color scale, which you can use +/- sign to change the direction of
+color scale.
+
+But the problem is that, color and size might work with continuous variables, but shape
+doesn't. Because the various numbers could deplete the current availble shapes that 
+represent them.
+```{r e.2.4.1.1_plot2, eval=FALSE}
+ggplot(mpg, aes(cty, hwy, shape = displ)) +
+  geom_point()
+
+# You get:
+# Error: A continuous variable can not be mapped to shape
+```
+
+You can use more than one aesthetic in a plot, such as:
+```{r e.2.4.1.1_plot3}
+ggplot(mpg, aes(cty, hwy, size = displ, color = displ)) +
+  geom_point()
+```
+
+**_Question 2_** What happens if you map a continuous variable to shape? Why? What
+happens if you map trans to shape? Why?
+The first part has been answered in the previous question.
+The second part to map trans to shape:
+```{r e.2.4.1.2}
+ggplot(mpg, aes(cty, hwy, shape = trans)) +
+  geom_point()
+```
+
+The plot generates a warning that shape for more than 6 discrete values becomes hard to discriminate.
+
+**_Question 3_** How is drive train related to fuel economy? How is drive train related to
+engine size and class?
+
+```{r e.2.4.1.3_plot1}
+ggplot(mpg, aes(drv, cty)) + 
+  geom_boxplot() +
+  scale_x_discrete(labels = c("Front wheel", "Rear wheel", "Four wheel"),
+                   limits = c("f", "r", "4"))
+```
+
+Four wheel appears to be most efficient for city miles per gallon.
+
+For drive train, engine size, and class, we need to reorder the class based on engine size first
+with median, and then plot class on x-axis and engine size on y-axis, with drive train as color.
+```{r e.2.4.1.3_plot2}
+ggplot(mpg, aes(reorder(class, displ, FUN = median), displ, color = drv)) +
+  geom_jitter(width = 0.5)
+```
+
+
+## Exercises 2.5.1
+**_Question 1_** What happens if you try to facet by a continuous variable like hwy? What
+about cyl? What’s the key difference?
+
+```{r e.2.5.1.1_plot1}
+ggplot(mpg, aes(x = cty, y = displ)) +
+  geom_point() +
+  facet_wrap(~ hwy)
+```
+
+When you run facet_wrap(~continuous) with continuous variable, the whole plot becomes hard to
+grasp because there are too many graphs.
+
+Then we try to run the same thing with cyl:
+
+```{r e.2.5.1.1_plot2}
+ggplot(mpg, aes(displ, cty)) +
+  geom_point() +
+  facet_wrap(~ cyl)
+```
+
+With cyl, which only has four different values, this picture is much easier to read. The key
+difference is that hwy has way too many variation in values than cyl does.
+
+**_Question 2_** Use facetting to explore the three-way relationship between fuel economy,
+engine size, and number of cylinders. How does facetting by number of
+cylinders change your assessment of the relationship between engine size
+and fuel economy?
+
+The pattern can be seen in the last plot.
+
+**_Question 3_** Read the documentation for facet wrap(). What arguments can you use to
+control how many rows and columns appear in the output?
+
+```{r e.2.5.1.3}
+?facet_wrap
+```
+
+We can use nrow and ncol to control the rows and columns that appear in the output.
+
+**_Question 4_** What does the scales argument to facet wrap() do? When might you
+use it?
+
+should Scales be fixed ("fixed", the default), free ("free"), or free in one dimension ("free_x", "free_y").
+
+```{r, results="hide"}
+library(mgcv)
+library(MASS)
+```
+
+
+
+**_Question 2_**
