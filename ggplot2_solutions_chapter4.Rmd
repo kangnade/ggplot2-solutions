@@ -1,0 +1,55 @@
+---
+title: "ggplot2_solutions_chapter4"
+author: "Nade Kang"
+date: "July 8, 2018"
+output: html_document
+---
+
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 4 Mastering the Grammar
+
+## *Exercise 4.5.1*
+### Load Packages
+```{r setup, results='hide'}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+**_Question 1_** One of the best ways to get a handle on how the grammar works is to
+apply it to the analysis of existing graphics. For each of the graphics listed
+below, write down the components of the graphic. Don’t worry if you don’t
+know what the corresponding functions in ggplot2 are called (or if they
+even exist!), instead focussing on recording the key elements of a plot so
+you could communicate it to someone else.
+
+1. “Napoleon’s march” by Charles John Minard: http://www.datavis.ca/
+gallery/re-minard.php
+
+This is based on my basic understanding, it may not be correct:
+ggplot(data, aes(x = year, y # of graphics)) +
+ geom_point() +
+ geom_hline(yintercept = some mean or median value) +
+ geom_smooth(method = "loess", se = FALSE) +
+ geom_text(some text annotation)
+ 
+2. “Where the Heat and the Thunder Hit Their Shots”, by Jeremy White,
+JoeWard, and Matthew Ericson at The New York Times. http://nyti.
+ms/1duzTvY
+
+ggplot(data, aes(x = coordX, y = coordY)) +
+ geom_Hexagonal(data = attempt_points, shape = number of attempts, color = points per region) +
+ ggtitle() +
+ geom_text(annotation) +
+ coord_quick_basketball_court()
+
+3. “London Cycle Hire Journeys”, by James Cheshire. http://bit.ly/
+1S2cyRy
+
+ggplot(data) +
+ geom_map()
+
+4. The Pew Research Center’s favorite data visualizations of 2014: http://
+pewrsr.ch/1KZSSN6
+
+First graph used area plot, vertical line, title, annotation and faceting
+Second used animation.
