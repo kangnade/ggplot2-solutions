@@ -1,0 +1,40 @@
+---
+title: "ggplot2_chapter3"
+author: "Nade Kang"
+date: "July 8, 2018"
+output: html_document
+---
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 3 Toolbox
+
+## *Exercise 3.2.1*
+### Load Packages
+```{r setup, results='hide'}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+**_Question 1_** What geoms would you use to draw each of the following named plots?
+1. Scatterplot: geom_point()
+2. Line chart: geom_line()
+3. Histogram: geom_histogram()
+4. Bar chart: geom_bar()
+5. Pie chart: geom_bar() + coord_polar("y")
+
+**_Question 2_** What’s the difference between geom path() and geom polygon()? What’s the
+difference between geom path() and geom line()?
+
+geom_path() connects the observations in the order in which they appear in the data. 
+geom_line() connects them in order of the variable on the x axis. 
+Polygons are very similar to paths (as drawn by geom_path) except that the start and 
+end points are connected and the inside is coloured by fill.
+geom_path() connects the observations in the order in which they appear in the data. 
+geom_line() connects them in order of the variable on the x axis. 
+
+**_Question 3_** What low-level geoms are used to draw geom smooth()? What about
+geom boxplot() and geom violin()?
+
+geom_point(), geom_path(), and geom_area() are used to draw with geom_smooth().
+geom_rect(), geom_line(), geom_point() are used for geom_boxplot().
+geom_area() and geom_path() are used for geom_violin()
+
