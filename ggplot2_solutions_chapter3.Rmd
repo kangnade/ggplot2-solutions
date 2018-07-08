@@ -38,3 +38,126 @@ geom_point(), geom_path(), and geom_area() are used to draw with geom_smooth().
 geom_rect(), geom_line(), geom_point() are used for geom_boxplot().
 geom_area() and geom_path() are used for geom_violin()
 
+## *Exercises 3.5.5*
+
+**_Question 1_** Draw a boxplot of hwy for each value of cyl, without turning cyl into a
+factor. What extra aesthetic do you need to set?
+
+```{r e.3.5.5.1}
+ggplot(mpg, aes(cyl, hwy, group = cyl)) +
+  geom_boxplot()
+```
+
+You simply add a "group = cyl" argument within the overall aes in ggplot()
+
+**_Question 2_** Modify the following plot so that you get one boxplot per integer value of
+displ.
+
+```{r q2, eval=FALSE}
+ggplot(mpg, aes(displ, cty)) +
+geom_boxplot()
+```
+
+```{r e.3.5.5.2}
+ggplot(mpg, aes(displ, cty)) +
+  geom_boxplot(aes(group = displ))
+```
+
+**_Question 3_** When illustrating the difference between mapping continuous and discrete
+colours to a line, the discrete example needed aes(group = 1). Why?What
+happens if that is omitted? What’s the difference between aes(group = 1)
+and aes(group = 2)? Why?
+
+The important thing (for a line graph with a factor on the horizontal axis) is to manually specify the grouping. By default ggplot2 uses the combination of all categorical variables in the plot to group geoms - that doesn't work for this plot because you get an individual line for each point. Manually specify group = 1 indicates you want a single line connecting all the points.
+
+**_Question 4_** How many bars are in each of the following plots?
+```{r}
+ggplot(mpg, aes(drv)) + geom_bar()
+ggplot(mpg, aes(drv, fill = hwy, group = hwy)) + geom_bar()
+library(dplyr)
+mpg2 <- mpg %>% arrange(hwy) %>% mutate(id = seq_along(hwy))
+ggplot(mpg2, aes(drv, fill = hwy, group = id)) + geom_bar()
+```
+
+All have 3 bars.
+
+**_Question 5_** Install the babynames package. It contains data about the popularity of
+babynames in the US. Run the following code and fix the resulting graph.
+Why does this graph make me unhappy?
+```{r, eval=FALSE}
+install.packages("babynames")
+```
+```{r e.3.5.5.5}
+library(babynames)
+hadley <- dplyr::filter(babynames, name == "Hadley")
+ggplot(hadley, aes(year, n)) +
+geom_line()
+```
+We want to see the growth of the new born babies with name called "Hadley". This graph doesn't
+show the full picture, and the shape of the line is not a good representation of the number of names
+we want to see. In addition, if you check the data, the count is separated by sex(gender). As a
+result, this line plot cannot show us the full details of the name Hadley's number's variation
+across the years. Starting in 1960s, there are female babies named as "Hadley".
+```{r e.3.5.5.5_plot}
+hadley
+male <- hadley %>%
+  filter(sex == "M")
+male
+
+female <- hadley %>%
+  filter(sex == "F")
+female
+
+ggplot(hadley) +
+  geom_line(aes(year, n, color = sex))
+```
+
+## *Exercises 3.11.1*
+**_Question 1_** What binwidth tells you the most interesting story about the distribution
+of carat?
+```{r e.3.11.1_plot1}
+ggplot(diamonds, aes(carat)) +
+  geom_histogram(binwidth = 0.01) +
+  xlim(0.4, 2)
+```
+
+Zooming in using xlim, we can see that a binwidth = 0.01 reveals some interesting pattern
+in terms of carat and number of diamonds.
+
+**_Question 2_** Draw a histogram of price. What interesting patterns do you see?
+
+```{r e.3.11.1.2}
+ggplot(diamonds, aes(price)) +
+  geom_histogram(binwidth = 30) +
+  xlim(0, 10000)
+```
+
+Not quite familiar with diamonds, so it's hard for me to say what kind of pattern there is.
+But you could try to adjust the binwidth and xlim() to see different patterns.
+
+**_Question 3_** How does the distribution of price vary with clarity?
+
+```{r e.3.11.1.3_1}
+ggplot(diamonds, aes(clarity, price)) +
+  geom_boxplot()
+```
+
+```{r e.3.11.3_2}
+ggplot(diamonds, aes(clarity, price)) +
+  geom_violin()
+```
+
+Again, I am not an expert in terms of the different levels of clarity. Therefore, I am not a 
+good judge in terms of the meaning of the plots.
+
+**_Question 4_** Overlay a frequency polygon and density plot of depth. What computed
+variable do you need to map to y to make the two plots comparable? (You
+can either modify geom freqpoly() or geom density().)
+
+```{r e.3.11.4}
+ggplot(diamonds, aes(depth)) +
+  geom_density(alpha = 0.1) +
+  geom_freqpoly()
+```
+
+Unsure about the answer.
