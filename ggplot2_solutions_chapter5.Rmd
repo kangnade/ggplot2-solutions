@@ -1,0 +1,50 @@
+---
+title: "ggplot2_solutions_chapter5"
+author: "Nade Kang"
+date: "July 9, 2018"
+output: html_document
+---
+
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 5 Build a Plot Layer by Layer
+
+## *Exercise 5.3.1*
+### Load Packages
+```{r setup, results='hide'}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+**_Question 1_** The first two arguments to ggplot are data and mapping. The first two
+arguments to all layer functions are mapping and data. Why does the order
+of the arguments differ? (Hint: think about what you set most commonly.)
+
+ggplot() sets the data first, while geom layers set their aesthetics first.
+
+**_Question 2_** The following code uses dplyr to generate some summary statistics about
+each class of car (you’ll learn how it works in Chap. 10).
+
+```{r}
+library(dplyr)
+class <- mpg %>% 
+  group_by(class) %>% 
+  summarise(n = n(), hwy = mean(hwy))
+class
+```
+
+```{r e.5.3.1.2}
+ggplot(mpg, aes(class, hwy)) +
+  geom_jitter(width = 0.05, size = 2) +
+  geom_point(aes(y = hwy), data = class, size = 4, color = "red") +
+  geom_text(aes(y = 10, label = paste0("n = ", n)), data = class)
+```
+
+The process behind the scene:
+First, you use the ggplot() function to define the main dataset and aesthetics you want to use. Here, we want to plot the hwy(y-axis) as points against class(x-axis). This is the first line of code.
+
+Second, remember, ggplot2 works by plotting a graph layer by layer. The second line of code is the first layer that we are going to add. Instead of a scatterplot using geom_point(), we want to use jitter plot to avoid overplotting in geom_point(). Here, we are using the same dataset - mpg, and using the same aesthetics (x = class, y = hwy) as we indicated in ggplot(), so we do not change anything. But, to make it look similar to the original plot in the textbook, we want to squeeze the width = 0.05 (or you can adjust this number to 0.1, 0.2 to take a look), and we can add a size = 2 or 1 or 3, it doesn't matter.
+
+Third, we want to create the same red dots in the original graph. This red dot, is the third layer. Here I used geom_point() because these red dots are basically points. However, red dots means the mean value of the y values on corresponding x values. In the original dataset mpg, we do not have this variable. So, here in the second layer of red dots, we need to reset some of the aesthetics and data. We want aesthetics to have y=hwy, this is the same as the ggplot(), but we change the dataset so data = class. Now, the layer knows that each class matches 1 y-axis value which is the hwy as mean value. We have the red dots there, but we also want to shape the size so it looks big, and color to red.
+
+Finally, to add the layer of labels. Any annotation, we use geom_text() layer to do it. We set the aes(y = 10), because this sets the height of the label near position of y = 10. Then we want to set the label value. But here, we only know the n, which is the count. But in the original graph, it is n = integer. So we need to use the paste0() function to concatenate string and numbers. write, label = paste0("n = ", n) to have an effect of n = integer, then, we set the data = class, because we are not using the original mpg.
+
