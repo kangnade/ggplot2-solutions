@@ -48,3 +48,218 @@ Third, we want to create the same red dots in the original graph. This red dot, 
 
 Finally, to add the layer of labels. Any annotation, we use geom_text() layer to do it. We set the aes(y = 10), because this sets the height of the label near position of y = 10. Then we want to set the label value. But here, we only know the n, which is the count. But in the original graph, it is n = integer. So we need to use the paste0() function to concatenate string and numbers. write, label = paste0("n = ", n) to have an effect of n = integer, then, we set the data = class, because we are not using the original mpg.
 
+## *Exercise 5.4.3*
+**_Question 1_** Simplify the following plot specifications:
+There is a type in the textbook, the variable is displ, not disp.
+```{r, eval=FALSE}
+ggplot(mpg) + geom_point(aes(mpg$displ, mpg$hwy)) 
+
+ggplot() + geom_point(mapping = aes(y = hwy, x = cty), data = mpg) + geom_smooth(data = mpg, mapping = aes(cty, hwy))
+
+ggplot(diamonds, aes(carat, price)) + geom_point(aes(log(brainwt), log(bodywt)), data = msleep)
+```
+
+```{r e.5.4.3.1_1}
+ggplot(mpg, aes(displ, hwy)) + geom_point()
+```
+
+```{r e.5.4.3.1_2}
+ggplot(mpg) + geom_point(aes(cty, hwy)) + geom_smooth(aes(cty, hwy))
+```
+
+```{r e.5.4.3.1_3}
+ggplot(aes(log(brainwt), log(bodywt)), data = msleep) + geom_point()
+```
+
+
+**_Question 2_** What does the following code do? Does it work? Does it make sense?
+Why/why not?
+
+```{r}
+ggplot(mpg) + geom_point(aes(class, cty)) + geom_boxplot(aes(trans, hwy)) + coord_flip()
+```
+
+This plot is using mpg dataset as a blank background without setting aesthetics. Then
+it adds the first layer using scatterplot with class as x-axis and cty on y axis.
+After that, it adds another layer using boxplot with trans on x-axis and hwy on y-axis.
+
+It doesn't work because the x-axis: 1. too crowded, need to add coord_flip() to read all
+the class and trans labels. 2. Trans and class are mixed together, it doesn't make sense.
+Also, boxplot is mixed with scatterplot. Y-axis has two different value groups, the hwy 
+and the cty. These two contain both continuous values but are different in nature because one
+is city miles per gallon, the other is highway miles per gallon.
+In the end, the x-axis and y-axis labels only have class and cty, it doesn't label trans
+and hwy.
+
+**_Question 3_** What happens if you try to use a continuous variable on the x axis in one
+layer, and a categorical variable in another layer? What happens if you do
+it in the opposite order?
+
+```{r e.5.4.3_1, eval=FALSE}
+ggplot(mpg) +
+  geom_point(aes(hwy, cyl)) +
+  geom_point(aes(drv, cty))
+```
+
+```{r e.5.4.3_2}
+ggplot(mpg) +
+  geom_point(aes(drv, cty)) +
+  geom_point(aes(hwy, cyl))
+```
+
+If you set first x-axis with categorical values, and then with continuous values, the plot
+will run but the result doesn't make sense at all. However, if you do it the opposite way,
+R will report errors.
+
+## *Exercises 5.5.1*
+**_Question 1_** Download and print out the ggplot2 cheatsheet from http://www.rstudio.
+com/resources/cheatsheets/ so you have a handy visual reference for all
+the geoms.
+
+Easy to do, just download.
+
+**_Question 2_** Look at the documentation for the graphical primitive geoms. Which aesthetics
+do they use? How can you summarise them in a compact form?
+
+geom_primitives such as geom_point(), geom_path(), geom_rect(), geom_polyon(), geom_text() and 
+so on all have common aesthetics such as: x, y, color, alpha, fill, group, size.
+Other features such as geom_point()'s stroke, or geom_path() and geom_rect()'s linetype, belong 
+to these funtions themselves. But the common ones are available in each function.
+
+**_Question 3_** What’s the best way to master an unfamiliar geom? List three resources
+to help you get started.
+
+You can use Winston Chang's R Graphics Cookbook, which shows you the recipe for different types of plots.
+Or you could use Hadley Wickham's gplot2 Elegant Graphics for Data Analysis.
+Or you can just use ?function to read the R documentation with examples to learn.
+
+**_Question 4_** For each of the plots below, identify the geom used to draw it.
+The first one on the upper left is violin
+```{r e.5.5.1.4_plot1}
+ggplot(mpg, aes(drv, displ)) +
+  geom_violin(size = 1, color = "black")
+```
+
+The one on upper right is a jitter plot with size and alpha features. It is not geom_point()
+because this results in overplotting.
+```{r e.5.5.1.4_plot2}
+ggplot(mpg) +
+  geom_jitter(aes(x = hwy, y = cty, alpha = 0.1, size = cyl)) +
+  theme(legend.position = "none")
+```
+
+The middle left plot is a hexagonal plot
+```{r e.5.5.1.4_plot3}
+ggplot(mpg) +
+  geom_hex(aes(x = hwy, y = cty))
+```
+
+Middle right is a jitter plot, thanks to stack overflow user PoGibas for the help. PoGibas mentioned:
+"By default jitter in geom_jitter is too large and we need to specify our own height and width of jitter by using position_jitter function.""
+```{r e.5.5.1.4_plot4}
+ggplot(mpg, aes(x = cyl, y = drv)) +
+  geom_jitter(width = 0.05, height = 0.05)
+# or geom_jitter(position = position_jitter(0.05, 0.05))
+```
+
+Next, we have to use the economics package in ggplot2.
+```{r e.5.5.1.4_plot5}
+ggplot(economics, aes(date, psavert)) +
+  geom_area()
+```
+
+Finally, the last plot.
+```{r e.5.5.1.4_plot6}
+ggplot(economics, aes(uempmed, psavert)) +
+  geom_path(size = 1)
+```
+
+**_Question 5_** For each of the following problems, suggest a useful geom:
+-Display how a variable has changed over time.
+geom_line()
+-Show the detailed distribution of a single variable.
+geom_histogram()
+-Focus attention on the overall trend in a large dataset.
+geom_line(), geom_area()
+-Draw a map.
+geom_sf(), geom_polygon(), coord_quickmap()    
+-Label outlying points.
+geom_point(), geom_text()
+
+## *Exercises 5.6.2*
+**_Question 1_** The code below creates a similar dataset to stat smooth(). Use the appropriate
+geoms to mimic the default geom smooth() display.
+
+```{r}
+mod <- loess(hwy ~ displ, data = mpg)
+smoothed <- data.frame(displ = seq(1.6, 7, length = 50))
+pred <- predict(mod, newdata = smoothed, se = TRUE)
+smoothed$hwy <- pred$fit
+smoothed$hwy_lwr <- pred$fit - 1.96 * pred$se.fit
+smoothed$hwy_upr <- pred$fit + 1.96 * pred$se.fit
+smoothed
+```
+
+We need to use geom_ribbon() instead of geom_area(), though area sounds more like coloring the region between
+the two standard deviation values. geom_ribbon() and geom_area() both display a y interval for given x values.
+However, geom_are() is a special case of geom_ribbon() for geom_area()'s ymin is fixed at 0.
+
+The sequence of the layers, without knowing other functions to deal with it, is important. If we plot the geom_ribbon()
+in the end filled with color, it will shadow the smooth line and data points.
+```{r e.5.6.2.1}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_ribbon(data = smoothed, aes(ymin = hwy_lwr, ymax = hwy_upr, color = "red"), fill = "grey") +
+  geom_point(position = "jitter") +
+  geom_line(data = smoothed, aes(y = hwy), size = 1, color = "red")
+```
+
+
+**_Question 2_** What stats were used to create the following plots?
+Not quite sure about this one.
+
+**_Question 3_** Read the help for stat sum() then use geom count() to create a plot that
+shows the proportion of cars that have each combination of drv and trans.
+
+```{r}
+mpg %>% 
+  group_by(drv, trans) %>% 
+  summarise(n = n()) %>% 
+  mutate(drvtrans = paste0(drv, "-", trans)) %>% 
+  ggplot() +
+  geom_bar(aes(drvtrans, n), stat = "identity") +
+  coord_flip()
+```
+
+## *Exercises 5.7.1*
+**_Question 1_** When might you use position nudge()? Read the documentation.
+
+position_nudge is generally useful for adjusting the position of items on discrete scales by a small amount. Nudging is built in to geom_text because it's so useful for moving labels a small distance from what they're labelling.
+
+e.g.:
+```{r, eval=FALSE, results='hide'}
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  geom_text(aes(label = y), position = position_nudge(y = -0.1))
+```
+
+**_Question 2_** Many position adjustments can only be used with a few geoms. For example,
+you can’t stack boxplots or errors bars. Why not? What properties
+must a geom possess in order to be stackable? What properties must it
+possess to be dodgeable?
+
+Not sure.
+
+**_Question 3_** Why might you use geom jitter() instead of geom count()? What are the
+advantages and disadvantages of each technique?
+
+Count() counts the number of obervations at each given x values, and then map the point.
+The more observation one given x value has, the larger the point.
+
+Jitter() adds random noise and shows how the observations are distributed in the plot.
+
+**_Question 4_** When might you use a stacked area plot? What are the advantages and
+disadvantages compared to a line plot?
+
+When you want to separate the x values based on a given category, you use stacked area plot.
+Advantage is it allows you to show the difference based on the criteria, but sometimes it is
+hard to figure out the real magnitude.
