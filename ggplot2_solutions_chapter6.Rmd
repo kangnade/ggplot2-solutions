@@ -91,3 +91,191 @@ ggplot(mpg, aes(class, displ)) +
   labs(x = "Type of car", y = "Displacement (l)", colour = "Drive\ntrain")
 ```
 
+## *Exercises 6.3.3
+**_Question 1_** Recreate the following graphic:
+Adjust the y axis label so that the parentheses are the right size.
+
+```{r e.6.3.3.1}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  scale_x_continuous("Displacement",
+                     breaks = c(2,3,4,5,6,7),
+                     labels = c("2k", "3k", "4k", "5k", "6k", "7k")) +
+  scale_y_continuous(quote(Highway (Miles/Gallon)))
+```
+
+**_Question 2_** List the three different types of object you can supply to the breaks argument.
+How do breaks and labels differ?
+
+Breaks takes one of the followings as input: 
+-NULL for no breaks
+-waiver() for the default breaks computed by the transformation object
+-A numeric vector of positions
+-A function that takes the limits as input and returns breaks as output
+
+Labels takes one of the followings as input:
+-NULL for no labels
+-waiver() for the default computed by the transformation object
+-A character vector giving labels (must be same length as breaks)
+-A function that takes the breaks as input and returns labels as output
+
+**_Question 3_** Recreate the following plot:
+
+```{r e.6.3.3.3}
+ggplot(mpg, aes(displ, hwy, color = drv)) +
+  geom_point() +
+  scale_color_discrete(labels = c("4wd", "fwd", "rwd"))
+```
+
+
+**_Question 4_** What label function allows you to create mathematical expressions?What
+label function converts 1 to 1st, 2 to 2nd, and so on?
+
+quote() to create mathematical expressions.
+Type: scales::format and up and down arrows to check:
+labels = scales::ordinal_format() to convert to 1st, 2nd, 3rd and so on.
+
+
+**_Question 5_** What are the three most important arguments that apply to both axes
+and legends? What do they do? Compare and contrast their operation for
+axes vs. legends.
+Maybe labs()? Not sure what three most important means.
+
+
+## *Exercises 6.4.4*
+**_Question 1_** How do you make legends appear to the left of the plot?
+theme(legend.position = "left")
+
+**_Question 2_** What’s gone wrong with this plot? How could you fix it?
+
+```{r}
+ggplot(mpg, aes(displ, hwy)) +
+geom_point(aes(colour = drv, shape = drv)) +
+scale_colour_discrete("Drive train")
+```
+
+The plot created two legends on the right-hand side, where you could just use one.
+
+Here, quoting from the book:"In order for legends to be merged, they must have the same name. So if you
+change the name of one of the scales, you’ll need to change it for all of them."
+
+As a result, here, the original plot sets only colour with new name, while shape doesn't have
+the same new name, the result is that these two legends cannot merge. There are two ways to fix this
+plot:
+
+```{r e.6.4.4.2_plot1}
+ggplot(mpg, aes(displ, hwy)) +
+geom_point(aes(color = drv, shape = drv)) +
+  labs(color = "Drive train", shape = "Drive train")
+```
+
+```{r e.6.4.4.2_plot2}
+ggplot(mpg, aes(displ, hwy)) + 
+  geom_point(aes(colour = drv, shape = drv)) + 
+  scale_colour_discrete("Drive train") +
+  scale_shape_discrete("Drive train")
+```
+
+**_Question 3_** Can you recreate the code for this plot?
+
+Answers are above in Question 2 answer.
+
+## *Exercises 6.5.1*
+**_Question 1_** The following code creates two plots of the mpg dataset. Modify the code
+so that the legend and axes match, without using facetting!
+```{r, eval=FALSE}
+fwd <- subset(mpg, drv == "f")
+rwd <- subset(mpg, drv == "r")
+ggplot(fwd, aes(displ, hwy, colour = class)) + geom_point()
+ggplot(rwd, aes(displ, hwy, colour = class)) + geom_point()
+```
+
+Use exactly expand_limits() function to set both plots' legend title to have all types
+of drv with the same set of colors.
+
+We can also set the xlim and ylim so that both plots have the same axes scales. But this
+is optional.
+
+```{r, e.6.5.1.1_plot1}
+fwd <- subset(mpg, drv == "f")
+rwd <- subset(mpg, drv == "r")
+ggplot(fwd, aes(displ, hwy, colour = class)) + 
+  geom_point() +
+  scale_color_discrete("Drive train") +
+  xlim(0, 10) +
+  ylim(0, 45) +
+  expand_limits(color = c("2seater", "compact", "midsize", "minivan",
+                                   "pickup", "subcompact", "suv"))
+```
+
+```{r, e.6.5.1.1_plot2}
+ggplot(rwd, aes(displ, hwy, colour = class)) + 
+  geom_point() +
+  scale_color_discrete("Drive train")+
+  xlim(0, 10) +
+  ylim(0, 45) +
+  expand_limits(color = c("2seater", "compact", "midsize", "minivan",
+                                   "pickup", "subcompact", "suv"))
+```
+
+
+**_Question 2_** What does expand limits() do and how does it work? Read the source
+code.
+
+Sometimes you may want to ensure limits include a single value, for all panels or all plots. This function is a thin wrapper around geom_blank that makes it easy to add such values.
+
+expand_limits() solves the first question.
+
+**_Question 3_** What happens if you add two xlim() calls to the same plot? Why?
+
+Use question 1's plot as an example, let's test what happens when we add two xlim() calls.
+```{r e.6.5.1.3}
+ggplot(rwd, aes(displ, hwy, colour = class)) + 
+  geom_point() +
+  scale_color_discrete("Drive train")+
+  xlim(0, 10) +
+  xlim(0, 20) +
+  ylim(0, 45) +
+  expand_limits(color = c("2seater", "compact", "midsize", "minivan",
+                                   "pickup", "subcompact", "suv"))
+```
+
+The result is that, the second xlim(0, 20) call overrides the first xlim(0, 10) call. As
+a result, the finished plot has an x-axis ranging from 0 to 20 instead of from 0 to 10.
+
+**_Question 4_** What does scale x continuous(limits = c(NA, NA)) do?
+Let's use the same plot:
+```{r e.6.5.1.4_plot1}
+ggplot(fwd, aes(displ, hwy, colour = class)) + 
+  geom_point() +
+  xlim(0, 20)
+```
+
+```{r e.6.5.1.4_plot2}
+ggplot(fwd, aes(displ, hwy, colour = class)) + 
+  geom_point() +
+  xlim(0, 20) +
+  scale_x_continuous(limits = c(NA, NA)) 
+```
+
+This overrides the existing xlim() on the plot. So there is no more limits from xlim().
+
+## *Exercises 6.6.5*
+**_Question 1_** Compare and contrast the four continuous colour scales with the four
+discrete scales.
+
+Please refer to the textbook.
+
+**_Question 2_** Explore the distribution of the built-in colors() using the luv colours
+dataset.
+
+```{r e.6.6.5.2}
+color_df <- colors()
+
+ggplot(luv_colours, aes(u, v)) +
+  geom_point(aes(color = color_df), size = 2) +
+  scale_color_identity() +
+  coord_equal()
+
+```
+
