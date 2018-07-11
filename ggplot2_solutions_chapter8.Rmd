@@ -1,0 +1,189 @@
+---
+title: "ggplot2_solutions_chapter8"
+author: "Nade Kang"
+date: "July 11, 2018"
+output: html_document
+---
+
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 8 Themes
+
+## *Exercise 8.2.1*
+### Load Packages
+```{r setup, results='hide'}
+library(tidyverse)
+library(ggthemes)
+```
+
+**_Question 1_** Try out all the themes in ggthemes. Which do you like the best?
+```{r e.8.2.1.1}
+df <- data.frame(x = c(1:4), y = c(5,8))
+df
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_calc() +ggtitle("theme_calc()")
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_economist() +ggtitle("theme_economist()") +
+  ylim(0, 10)
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_excel() +ggtitle("theme_excel()") +
+  ylim(0, 10)
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_fivethirtyeight() +ggtitle("theme_fivethirtyeight()") +
+  ylim(0, 10)
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_pander() +ggtitle("theme_pander()") +
+  ylim(0, 10)
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_solarized() +ggtitle("theme_solarized()") +
+  ylim(0, 10)
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_solarized_2() +ggtitle("theme_solarized_2()") +
+  ylim(0, 10)
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_tufte() +ggtitle("theme_tufte()") +
+  ylim(0, 10)
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_stata() +ggtitle("theme_stata()") +
+  ylim(0, 10)
+
+ggplot(df, aes(x, y)) +
+  geom_point() +
+  theme_wsj() +ggtitle("theme_wsj()") +
+  ylim(0, 10)
+```
+
+I like theme_solarized(), solarized_2, wsj, stata, and tufte.
+
+**_Question 2_** What aspects of the default theme do you like? What don’t you like?
+What would you change?
+```{r}
+ggplot(df, aes(x,y)) +
+  geom_point() +
+  theme_bw()
+```
+
+It's quite a personal preference related question. I'll try change in when plotting data.
+
+**_Question 3_** Look at the plots in your favourite scientific journal. What theme do they
+most resemble? What are the main differences?
+
+Not quite sure, probably some themes in stata could be more common? Some journals in finance
+uses theme_bw() quite often.
+
+## *Exercises 8.4.6*
+**_Question 1_** Create the ugliest plot possible! (Contributed by Andrew D. Steen, University
+of Tennessee - Knoxville)
+
+```{r e.8.4.6.1}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(position = "jitter", aes(color = class), size = 20) +
+  ggtitle("Hope this is ugly enough!!!!! Looks like a prison") +
+  labs(x = "Displacement eGINE", y = "highWAY miles Per miles", color = "type of CAR") +
+  theme(legend.background = element_rect(fill = "black"),
+        legend.key = element_rect("lightblue"),
+        legend.text = element_text(color = "white", face = "bold", size = 8),
+        legend.title = element_text(color = "white", face = "bold", size = 4),
+        plot.title = element_text(hjust = 1, size = 18, face = "bold", color = "red"),
+        plot.background = element_rect(fill = "black", color = "grey50"),
+        panel.background = element_rect(fill = "black", color = "lightblue"),
+        panel.grid.major = element_line(colour = "white", size = 3, linetype = "dotted"),
+        panel.grid.minor = element_line(color = "red", size = 4),
+        axis.text.x = element_text(angle = 90, vjust = 1, size = 10, color = "red"),
+        axis.text.y = element_text(angle = 180, hjust = 2, size = 20, color = "white")
+        )
+  
+```
+
+**_Question 2_** theme dark() makes the inside of the plot dark, but not the outside. Change
+the plot background to black, and then update the text settings so you
+can still read the labels.
+
+The best way to do so is to make the axis texts and axis titles color white.
+
+```{r e.8.4.6.2}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(position = "jitter", aes(color = class), size = 2) +
+  theme_dark() +
+  ggtitle("HWY against DISPL") +
+  theme(plot.background = element_rect(fill = "black")) +
+  labs(x = "Displacement", y = "Highway Miles Per Hour", color = "Type of Car") +
+  theme(axis.text.x = element_text(size = 10, color = "white"),
+        axis.text.y = element_text(size = 10, color = "white"),
+        axis.title = element_text(color = "white"),
+        plot.title = element_text(color = "white", hjust = 0.5))
+```
+
+**_Question 3_** Make an elegant theme that uses “linen” as the background colour and a
+serif font for the text.
+
+```{r e.8.4.6.3}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  ggtitle("HWY AGAINST DISPL") +
+  labs(x = "Displacement", y = "Highway Miles Per Hour", color = "Type of Car") +
+  theme(plot.background = element_rect(fill = "linen"),
+        panel.background = element_rect(fill = "linen"),
+        plot.title = element_text(hjust = 0.5, size = 15, family = "serif"),
+        text = element_text(family = "serif"),
+        legend.background = element_rect(fill = "linen"),
+        legend.text = element_text(family = "serif"),
+        panel.grid.major = element_line(linetype = "dotted", color = "black", size = 0.4),
+        panel.grid.minor = element_line(linetype = "dotted", color = "grey50", size = 0.4))
+```
+
+**_Question 4_** Systematically explore the effects of hjust when you have a multiline title.
+Why doesn’t vjust do anything?
+
+When you have a long title, it will show up as the following: the title is not completely shown in the output plot.
+```{r e.8.4.6.4_plot1}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  ggtitle("This is a very long title to explore the effects of hjust and vjust so let's see what will happen to the plot and answer the question")
+```
+
+Let's try use different levels of vjust:
+```{r e.8.4.6.4_plot2}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  ggtitle("This is a very long title to explore the effects of hjust and vjust so let's see what will happen to the plot and answer the question") +
+  theme(plot.title = element_text(vjust = 0.5))
+```
+
+It seems that no matter vjust is 0, 0.5 or even you put 1, it doesn't help with the issue.
+```{r e.8.4.6.4_plot3}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  ggtitle("This is a very long title to explore the effects of hjust and vjust so let's see what will happen to the plot and answer the question") +
+  theme(plot.title = element_text(vjust = 0))
+```
+
+The reason is that, vjust means vertical adjustment. When the full title is not shown, adjusting
+the vertical position doesn't help with the problem. Instead, we can use hjust combined with expression(atop())
+nested functions.
+
+The expression(atop()) functions allow you to separate the title into different pieces of strings, separated by comma.
+Thus adding hjust = 0.5 will put the title in to multiple lines and centered in the middle.
+```{r e.8.4.6.4_plot4}
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(color = class)) +
+  ggtitle(expression(atop("This is a very long title to explore the effects of hjust", "and vjust so let's see what will happen to the plot and answer the question"))) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
