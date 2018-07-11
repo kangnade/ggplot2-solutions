@@ -1,0 +1,83 @@
+---
+title: "ggplot2_solutions_chapter7"
+author: "Nade Kang"
+date: "July 11, 2018"
+output: html_document
+---
+
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 7 Positioning
+
+## *Exercise 7.2.7*
+### Load Packages
+```{r setup, results='hide'}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+**_Question 1_** Diamonds: display the distribution of price conditional on cut and carat.
+Try facetting by cut and grouping by carat. Try facetting by carat and
+grouping by cut. Which do you prefer?
+
+First we create two bases:
+```{r e.7.2.7.1_base}
+base_cut <- ggplot(diamonds)
+base_cut
+base_cut + geom_histogram(aes(x = price, fill = cut), position = "dodge")
+
+base_carat <- ggplot(diamonds, aes(carat, price))
+base_carat +geom_point()
+```
+
+Facetting cut and group by carat
+```{r e.7.2.7.1_plot1}
+base_carat + geom_point(aes(color = carat)) +
+  facet_wrap(~ cut, scales = "free")
+```
+
+Try facetting by carat and grouping by cut
+```{r e.7.2.7.1_plot2}
+diamonds2 <- diamonds
+diamonds2$carat_i <- cut_interval(diamonds$carat, 10)
+  
+
+ggplot(diamonds, aes(cut, price)) +
+  geom_boxplot(aes(color = cut)) +
+  coord_flip() +
+  facet_wrap(~ diamonds2$carat_i)
+```
+Facetting cut and group by carat is better from my point of view.
+
+**_Question 2_** Diamonds: compare the relationship between price and carat for each
+colour. What makes it hard to compare the groups? Is grouping better
+or facetting? If you use facetting, what annotation might you add to make
+it easier to see the differences between panels?
+
+With facetting, each group of cut is separated in its own plot, therefore, leaving no
+chance for us to see the differences when every cut is on the same plot. Depends on your
+personal taste, you can choose either faceting or grouping.
+
+**_Question 3_** Why is facet wrap() generally more useful than facet grid()?
+
+Reading from the documentation:
+facet_wrap wraps a 1d sequence of panels into 2d. This is generally a better use of screen space than facet_grid because most displays are roughly rectangular.
+
+**_Question 4_** Recreate the following plot. It facets mpg2 by class, overlaying a smooth
+curve fit to the full dataset.
+
+```{r mpg2}
+mpg2 <- subset(mpg, cyl != 5 & drv %in% c("4", "f") & class != "2seater")
+head(mpg2)
+```
+```{r}
+ggplot(mpg2, aes(displ, hwy)) + 
+  geom_smooth(data = select(mpg2, -class), se = FALSE) + 
+  geom_point() + 
+  facet_wrap(~class, nrow = 2)
+```
+
+In documentation:
+The data to be displayed in this layer. There are three options:
+If NULL, the default, the data is inherited from the plot data as specified in the call to ggplot.
+A data.frame, or other object, will override the plot data. All objects will be fortified to produce a data frame. See fortify for which variables will be created.
+A function will be called with a single argument, the plot data. The return value must be a data.frame., and will be used as the layer data.
