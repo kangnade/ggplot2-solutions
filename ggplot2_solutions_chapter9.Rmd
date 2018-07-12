@@ -32,7 +32,59 @@ table4b_trans %>%
 **_Question 2_** How can you convert back and forth between the economics and
 economics long datasets built into ggplot2?
 
-```{r e.9.3.3.2}
+Take a look at the economics and economics_long dataset, it is easy to discover that
+the latter one is simply the gathered economics dataset.
+However, I do not know how the economic_long dataset created value01 column.
 
+```{r e.9.3.3.2}
+economics
+economics_long
+
+economics_longe <- economics %>% 
+  gather(pce, pop, psavert, uempmed, unemploy, key = "variable", value = "value")
+economics_longe
+```
+
+**_Question 3_** Install the EDAWR package from https://github.com/rstudio/EDAWR.
+Tidy the storms, population and tb datasets.
+
+I installed the package using a R script. You have to do it your own to install it by
+typing install.packages("EDAWR")
+
+I got a warning:
+Warning in install.packages :
+  package ‘EDAWR’ is not available (for R version 3.4.4)
+So cannot complete this question here.
+
+## *Exercise 9.4.1*
+**_Question 1_** Install the EDAWR package from https://github.com/rstudio/EDAWR.
+Tidy the who dataset.
+
+Cannot complete this one.
+
+**_Question 2_** Work through the demos included in the tidyr package (demo(package =
+"tidyr"))
+```{r, eval=FALSE}
+(demo(package = "tidyr"))
+```
+
+```{r e.9.4.1.2_1}
+smiths <- tidyr::smiths
+smiths
+
+smiths_gather <- smiths %>% 
+  gather(age, weight, height, key = "characters", value = "value")
+smiths_gather
+```
+
+We can spread the population dataset:
+
+```{r e.9.4.1.2_2}
+population <- tidyr::population
+head(population)
+
+pop_spread <- population %>% 
+  spread(key = "year", value = "population")
+pop_spread
 ```
 
