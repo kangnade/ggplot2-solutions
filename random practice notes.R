@@ -102,3 +102,5 @@ base + theme(panel.grid.major = element_line(color = "grey50", size = 0.8, linet
 base + theme(panel.grid.major.x = element_line(color = "grey50", size = 0.8, linetype = "dotted"))
 base2 <- base + theme(plot.background = element_rect(color = "grey50"))
 base2 + theme(aspect.ratio = 2/1)
+
+

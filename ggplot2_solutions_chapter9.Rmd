@@ -1,0 +1,38 @@
+---
+title: "ggplot2_solutions_chapter9"
+author: "Nade Kang"
+date: "July 12, 2018"
+output: html_document
+---
+
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 9 Data Analysis
+
+## *Exercise 9.3.3*
+### Load Packages
+```{r setup, results='hide'}
+library(tidyverse)
+library(ggthemes)
+```
+
+**_Question 1_** How can you translate each of the initial example datasets into the other
+form?
+
+I do not have the ec2 dataset. Instead, I'll use the data in tidyverse:
+```{r e.9.3.3.1}
+table4b
+table4b_trans <- table4b %>%
+  gather(key = "year", value = "population", `1999`, `2000`)
+table4b_trans
+
+table4b_trans %>% 
+  spread(key = "year", value = "population")
+```
+
+**_Question 2_** How can you convert back and forth between the economics and
+economics long datasets built into ggplot2?
+
+```{r e.9.3.3.2}
+
+```
+
