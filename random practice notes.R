@@ -103,4 +103,41 @@ base + theme(panel.grid.major.x = element_line(color = "grey50", size = 0.8, lin
 base2 <- base + theme(plot.background = element_rect(color = "grey50"))
 base2 + theme(aspect.ratio = 2/1)
 
+diamonds_ok <- diamonds %>% filter(x > 0, y > 0, y < 20)
+ggplot(diamonds_ok, aes(x,y)) +
+  geom_bin2d() +
+  geom_abline(slope = 1, color = "white", size = 1, alpha = 0.5)
+?diamonds
+dia <- filter(diamonds, z > 50)
+dia
+is.na(1 + 2i)
+?is.na
+is.na(c(NA, NA, 2, 4))
+(xx <- c(0:4))
+xx
+is.na(xx) <- c(2, 4)
+xx
+!is.na(xx)
 
+?!is.na
+c <- c()
+is.na(NULL)
+?is.na
+is.na(2*3)
+
+?xor
+x <- TRUE
+!x
+xor(x, !x)
+
+# install.packages("ggplot2movies")
+movies
+View(movies)
+x <- 5.0e+05
+as.numeric(x)
+
+options(scipen = 999)
+typeof(movies$budget)
+movies3 <- movies %>% 
+  mutate(budget = as.integer(budget))
+View(movies3)

@@ -145,7 +145,8 @@ ggplot(mpg, aes(displ, hwy)) +
         legend.background = element_rect(fill = "linen"),
         legend.text = element_text(family = "serif"),
         panel.grid.major = element_line(linetype = "dotted", color = "black", size = 0.4),
-        panel.grid.minor = element_line(linetype = "dotted", color = "grey50", size = 0.4))
+        panel.grid.minor = element_line(linetype = "dotted", color = "grey50", size = 0.4),
+        axis.line = element_line(colour = "grey50"))
 ```
 
 **_Question 4_** Systematically explore the effects of hjust when you have a multiline title.

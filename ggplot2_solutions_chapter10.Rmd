@@ -1,0 +1,137 @@
+---
+title: "ggplot2_solutions_chapter10"
+author: "Nade Kang"
+date: "July 13, 2018"
+output: html_document
+---
+
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 10 Data Transformation
+
+## *Exercise 10.2.3*
+### Load Packages
+```{r setup, results='hide'}
+library(tidyverse)
+library(ggthemes)
+```
+
+**_Question 1_** Practice your filtering skills by:
+- Finding all the diamonds with equal x and y dimensions.
+```{r e.10.2.3.1_1}
+diamonds_xey <- filter(diamonds, x == y)
+head(diamonds_xey)
+```
+
+- A depth between 55 and 70.
+Here, depth refers to the value z.
+Assuming the between means inclusive:
+```{r e.10.2.3.1_2}
+diamonds_z5570 <- diamonds %>% filter(z >= 55 & z <= 70)
+head(diamonds_z5570)
+```
+
+So there is no such diamond that has a depth between 55 and 70.
+
+- A carat smaller than the median carat.
+```{r e.10.2.3.1_3}
+dia_cara_lessmedian <- filter(diamonds, carat < median(diamonds$carat))
+head(dia_cara_lessmedian)
+```
+
+- Cost more than $10,000 per carat
+```{r e.10.2.3.1_4}
+more10000pc <- filter(diamonds, price/carat > 10000)
+head(more10000pc)
+```
+
+
+- Are of good or better quality
+Are of good or better means excluding fiar:
+```{r e.10.2.3.1_5}
+besseralsgut <- filter(diamonds, cut != "Fair")
+head(besseralsgut)
+```
+
+
+**_Question 2_** Fill in the question marks in this table:
+
+Expression   TRUE   FALSE   NA
+x            x
+!x                  x
+is.na(x)                   x
+!is.na(x)           x
+
+Didn't understand this table, waiting for help from Stack Overflow.
+
+**_Question 3_** Repeat the analysis of outlying values with z. Compared to x and y, how
+would you characterise the relationship of x and z, or y and z?
+
+We make a first plot to take a look at the data:
+```{r}
+ggplot(diamonds, aes(x, z)) +
+  geom_jitter()
+```
+
+Then we know to extract x > 0 and z > 0, with z < 10:
+```{r e.10.2.3.3_plot1}
+diamonds_zok <- filter(diamonds, x > 0, z > 0, z < 10)
+ggplot(diamonds_zok, aes(x, z)) +
+  geom_bin2d() +
+  geom_abline(slope = 0.6, color = "white", size = 1, alpha = 0.5)
+```
+
+Despite the outliers, there seems to be a positive replationship between x and z.\
+
+Now let's take a look at y and z:
+```{r}
+ggplot(diamonds, aes(y, z)) +
+  geom_jitter()
+```
+
+We need to extract 0 < z < 10 and 0 < y < 15:
+```{r e.10.2.3.3_plot2}
+diamonds_yz <- filter(diamonds, z > 0 & z < 10, y > 0 & y < 15)
+ggplot(diamonds_yz, aes(y, z)) +
+  geom_bin2d() +
+  geom_abline(slope = 0.65, color = "white", size = 1, alpha = 0.5)
+```
+
+
+**_Question 4_** Install the ggplot2movies package and look at the movies that have a
+missing budget. How are they different from the movies with a budget?
+(Hint: try a frequency polygon plus colour = is.na(budget).)
+
+```{r}
+library(ggplot2movies)
+movies <- ggplot2movies::movies
+movies
+movies2 <- movies %>% 
+  mutate(hasbudget = ifelse(budget == 0, "Missing Budget", "Has Budget"))
+movies2
+ggplot(movies2, aes(budget)) +
+  geom_freqpoly(aes(color = hasbudget))
+```
+
+Not quite sure what conclusion can be drawn from here. 
+
+**_Question 5_** What is NA & FALSE and NA | TRUE? Why? Why doesn’t NA * 0 equal zero?
+What number times zero does not equal 0? What do you expect NA ˆ 0 to
+equal? Why?
+```{r}
+NA & FALSE
+# FALSE
+NA | TRUE
+# TRUE
+```
+This is because the logical expressions follow the Kleene and Priest logics, view it here:
+https://en.wikipedia.org/wiki/Three-valued_logic
+
+```{r}
+NA * 0
+# NA
+NA ^ 0
+# 1
+```
+
+The reason that NA * 0 is not equal to 0 is that x * 0 = NaN is undefined when x = Inf or x = -Inf.
+But anything with power to 0 is 1.
