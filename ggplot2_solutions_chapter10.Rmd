@@ -59,7 +59,9 @@ Expression   TRUE   FALSE   NA
 x            x
 !x                  x
 is.na(x)                   x
-!is.na(x)           x
+!is.na(x)    x        
+is.na(x)|x   x
+is.na(x)|!x  x
 
 Didn't understand this table, waiting for help from Stack Overflow.
 
@@ -135,3 +137,263 @@ NA ^ 0
 
 The reason that NA * 0 is not equal to 0 is that x * 0 = NaN is undefined when x = Inf or x = -Inf.
 But anything with power to 0 is 1.
+
+## *Exercises 10.3.2*
+**_Question 1_** Practice your variable creation skills by creating the following new variables:
+- The approximate volume of the diamond (using x, y, and z).
+
+Assuming the volume of a diamond is approximately 2/3 of a cubic with approximately the same parameters:
+```{r e.10.3.2.1_1}
+diamonds_q1 <- diamonds %>% 
+  mutate(vol = x * y * z *(2/3))
+head(select(diamonds_q1, carat, cut, x:z, vol))
+```
+
+
+- The approximate density of the diamond.
+One carat is about 0.2 gram, and to calculate density, density is gram/cm^3:
+```{r e.10.3.2.1_2}
+diamonds_q1 <- diamonds_q1 %>% 
+  mutate(density = carat * 0.2 / vol)
+head(select(diamonds_q1, carat, cut, vol, density))
+```
+
+
+- The price per carat.
+Price per carat is simply price/carat
+```{r e.10.3.2.1_3}
+diamonds_q1 <- diamonds_q1 %>% 
+  mutate(pricepc = price/carat)
+head(select(diamonds_q1, carat, price, vol, density, pricepc))
+```
+
+
+- Log transformation of carat and price.
+```{r e.10.3.2.1_4}
+diamonds_q1 <- diamonds_q1 %>% 
+  mutate(caratl = log2(carat),
+         pricel = log2(price))
+head(select(diamonds_q1, carat, price, caratl, pricel))
+```
+
+
+**_Question 2_** How can you improve the data density of ggplot(diamonds, aes(x, z)) +
+stat bin2d(). What transformation makes it easier to extract outliers?
+
+```{r}
+ggplot(diamonds, aes(x, z)) +
+  stat_bin2d()
+```
+
+I am not quite sure about what the question is asking for.
+
+**_Question 3_** The depth variable is just the width of the diamond (average of x and y)
+divided by its height (z) multiplied by 100 and round to the nearest integer.
+Compute the depth yourself and compare it to the existing depth variable.
+Summarise your findings with a plot.
+
+Depth is calculated as height(z) divided by width (avg of x and y) times 100. There is expression
+mistake in the question.
+```{r e.10.3.2.3}
+diamonds_q1 <- diamonds_q1 %>% 
+  mutate(depth_cal = round(z / ((x + y)/2) * 100))
+head(select(diamonds_q1, depth_cal, depth))
+```
+
+Make a plot:
+We calculate the difference between the given depth and our calculated depth_cal, then we make 
+a plot, if the plots shows more positive values, then it means our calculation is below the original,
+otherwise, above.
+```{r e.10.3.2.3_plot}
+diamonds_q1 <- diamonds_q1 %>% 
+  mutate(diff = depth - depth_cal,
+         seq = seq_along(carat))
+diamonds_q1
+ggplot(diamonds_q1) +
+  geom_area(aes(x = seq, y = diff)) +
+  xlim(800, 1500) + ylim(-2, 2)
+```
+
+You can adjust the xlim and ylim to zoom in different areas of the plot to take a look. Here only
+offers one set of values for an example.
+
+**_Question 4_** Compare the distribution of symmetry for diamonds with x > y vs. x < y.
+```{r e.10.3.2.4_plot1}
+diamonds_q1 %>%
+  filter(x > y) %>%
+  ggplot(aes(x)) +
+  geom_bar(binwidth = 0.2)
+```
+
+```{r e.10.3.2.4_plot2}
+diamonds_q1 %>%
+  filter(y > x) %>%
+  ggplot(aes(x)) +
+  geom_bar(binwidth = 0.2)
+```
+
+
+## *Exercises 10.4.3*
+**_Question 1_** For each year in the ggplot2movies::movies data determine the percent of
+movies with missing budgets. Visualise the result.
+```{r view, eval=FALSE}
+movies <- ggplot2movies::movies
+View(movies)
+```
+
+We need to create a boolean column called with_budget, so if the movie has a budget, we place TRUE,
+else we place FALSE
+
+```{r e.10.4.3.1}
+movies1 <- movies %>% 
+  mutate(with_budget = ifelse(is.na(budget), FALSE, TRUE)) %>%
+  group_by(year) %>%
+  summarise(
+    hasBudget = sum(with_budget),
+    total = n(),
+    propNoBudget = 1 - hasBudget/total
+  )
+ggplot(movies1, aes(year, propNoBudget)) +
+  geom_area(aes(fill = "linen")) +
+  labs(fill = expression(atop("No Budget"))) +
+  theme(legend.title = element_text(vjust = 0))
+  
+movies1
+```
+
+As you can see from the plot, the percentage of movies with missing budget decreased with
+the progression of time.
+
+**_Question 2_** How does the average length of a movie change over time? Display your
+answer with a plot, including some display of uncertainty.
+
+We only need to group the data by year, and then calculate the mean of length, then use a 
+line plot (since we have time and a continuous variable).
+
+```{r e.10.4.3.2}
+q2 <- movies %>% 
+  group_by(year) %>% 
+  summarise(mean = mean(length))
+q2
+ggplot(q2, aes(year, mean)) +
+  geom_line()
+```
+
+As we can see, the average length of movies increased from 1890s to now.
+
+**_Question 3_** For each combination of diamond quality (e.g. cut, colour and clarity),
+count the number of diamonds, the average price and the average size.
+Visualise the results.
+
+Assume size means depth
+```{r e.10.4.3.3_cut}
+diamonds_q3 <- diamonds %>% 
+  group_by(cut) %>%
+  summarise(
+    number = n(),
+    avgprice = mean(price),
+    avgsize = mean(depth)
+  )
+diamonds_q3
+
+ggplot(diamonds, aes(cut)) +
+  geom_bar() +
+  ggtitle("Number of diamonds in each cut")
+
+ggplot(diamonds_q3, aes(cut, avgprice)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Average Price of Each Cut")
+
+ggplot(diamonds_q3, aes(cut, avgsize)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Average Size of Each Cut")
+
+```
+
+```{r e.10.4.3.3_color}
+diamonds_q3 <- diamonds %>% 
+  group_by(color) %>%
+  summarise(
+    number = n(),
+    avgprice = mean(price),
+    avgsize = mean(depth)
+  )
+
+ggplot(diamonds, aes(color)) +
+  geom_bar() +
+  ggtitle("Number of diamonds in Each Color")
+
+ggplot(diamonds_q3, aes(color, avgprice)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Average Price of Each Color")
+
+ggplot(diamonds_q3, aes(color, avgsize)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Average Size of Each Color")
+```
+
+```{r e.10.4.3.3_clarity}
+diamonds_q3 <- diamonds %>% 
+  group_by(clarity) %>%
+  summarise(
+    number = n(),
+    avgprice = mean(price),
+    avgsize = mean(depth)
+  )
+
+ggplot(diamonds, aes(clarity)) +
+  geom_bar() +
+  ggtitle("Number of diamonds in Each Clarity")
+
+ggplot(diamonds_q3, aes(clarity, avgprice)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Average Price of Each Clarity")
+
+ggplot(diamonds_q3, aes(clarity, avgsize)) +
+  geom_bar(stat = "identity") +
+  ggtitle("Average Size of Each Clarity")
+```
+
+
+**_Question 4_** Compute a histogram of carat by “hand” using a binwidth of 0.1. Display
+the results with geom bar(stat = "identity"). (Hint: you might need to
+create a new variable first.)
+
+Not sure about the best way to compute by hand.
+
+```{r e.10.4.3.4}
+ggplot(diamonds, aes(carat)) +
+  geom_histogram(binwidth = 0.1)
+```
+
+
+**_Question 5_** In the baseball example, the batting average seems to increase as the
+number of at bats increases. Why?
+
+Not familiar with baseball, but practice makes perfect?
+
+## *Exercises 10.5.1*
+**_Question 1_** Translate each of the examples in this chapter to use the pipe.
+
+Most of my codes above used pipes, but each example is too much.
+
+**_Question 2_** What does the following pipe do?
+```{r, eval=FALSE}
+library(magrittr)
+x <- runif(100)
+x %>%
+subtract(mean(.)) %>%
+raise_to_power(2) %>%
+mean() %>%
+sqrt()
+```
+
+It loads the magittr package first, then assign 100 uniformly distributed random variable between
+0 and 1 to x. Using this x, subtract each value by the mean of x. Then raise the value to the power
+of 2, then calculate the mean of the result, then square the result. As you can see, this is calculating
+the VARIANCE.
+
+**_Question 3_** Which player in the Batting dataset has had the most consistently good
+performance over the course of their career?
+
+Not familiar with baseball, and choose the criteria, group the data by player, arrange criteria in decending order.

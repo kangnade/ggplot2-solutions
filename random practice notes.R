@@ -141,3 +141,44 @@ typeof(movies$budget)
 movies3 <- movies %>% 
   mutate(budget = as.integer(budget))
 View(movies3)
+
+
+diamonds_ok2 <- mutate(diamonds_ok,
+                       sam = x - y,
+                       size = sqrt(x ^ 2 + y ^ 2))
+diamonds_ok2
+ggplot(diamonds_ok2, aes(size, sam)) +
+  stat_bin2d()
+
+ggplot(diamonds_ok2, aes(abs(sam))) +
+  geom_histogram(binwidth = 0.10)
+diamonds_ok3 <- filter(diamonds_ok2, abs(sam) < 0.20)
+ggplot(diamonds_ok3, aes(abs(sam))) +
+  geom_histogram(binwidth = 0.01)
+
+width <- diamonds$x * diamonds$y /2
+width / diamonds$z * 100
+
+diamonds$depth / 100 / diamonds$z * 2
+?diamonds
+
+
+by_clarity <- diamonds %>% 
+  group_by(clarity) %>% 
+  summarise(
+    n = n(),
+    mean = mean(price),
+    lq = quantile(price, 0,25),
+    uq = quantile(price, 0.75)
+  )
+by_clarity
+ggplot(by_clarity, aes(clarity, mean)) +
+  geom_linerange(aes(ymin = lq, ymax = uq)) +
+  geom_line(aes(group = 1), color = "grey50") +
+  geom_point(aes(size = n))
+typeof(movies$length)
+mean(movies$length)
+?diamonds
+
+runif(100)
+?runif
