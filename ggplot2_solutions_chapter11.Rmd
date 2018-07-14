@@ -21,7 +21,7 @@ of log(carat) vs relative price represent? What does the diagonal line
 without any points represent?
 
 Applying the analysis to all diamonds, without filtering diamonds with <= 2 carat.
-```{r e.11.2.1}
+```{r e.11.2.1.1}
 diamonds_all <- diamonds %>% 
   mutate(lprice = log2(price),
          lcarat = log2(carat))
@@ -52,7 +52,7 @@ diamonds with large carat are cheapter than expected.
 **_Question 2_** made an unsupported assertion that lower-quality diamonds tend to be
 larger. Support my claim with a plot.
 
-```{r e.11.2.2}
+```{r e.11.2.1.2}
 ggplot(diamonds_all, aes(color, carat)) +
   geom_boxplot(aes(color = cut))
 ```
@@ -68,7 +68,7 @@ the same message.
 
 We can use facet_wrap() to help with the plot:
 
-```{r e.11.2.2}
+```{r e.11.2.1.3}
 ggplot(diamonds_all, aes(cut, rel_price)) +
   geom_boxplot(aes(color = color)) +
   facet_wrap(~clarity)
@@ -76,3 +76,60 @@ ggplot(diamonds_all, aes(cut, rel_price)) +
 
 
 **_Question 4_** How do depth and table relate to the relative price?
+
+```{r e.11.2.1.4_plot1}
+ggplot(diamonds_all, aes(depth, rel_price)) +
+  geom_point()
+```
+
+It seems that the depth doesn't show a clear pattern wIth relative_price, although, given
+a certain depth of diamond, the relative price could be high or low. This because the price
+of a diamonds usually depends on color, cut, and clarity rather than on depth.
+
+```{r e.11.2.1.4_plot2}
+ggplot(diamonds_all, aes(table, rel_price)) +
+  geom_point()
+```
+
+Interesting pattern for table and relative price. As we can see from the plot, with the table
+increasing fom 50 to about 59, the relative price variated greater, and then smaller as table
+continue to increase.
+
+## *Exercises 11.3.1*
+
+**_Question 1_** The final plot shows a lot of short-term noise in the overall trend. How
+could you smooth this further to focus on long-term changes?
+```{r}
+deseas <- function(x, month) {
+resid(lm(x ~ factor(month), na.action = na.exclude))
+}
+
+txhousing <- txhousing %>% 
+  group_by(city) %>% 
+  mutate(rel_sales = deseas(log(sales), month))
+
+ggplot(txhousing, aes(date, rel_sales)) + 
+  geom_line(aes(group = city), alpha = 1/5) + 
+  geom_line(stat = "summary", fun.y = "mean", colour = "red")
+
+ggplot(txhousing, aes(date, rel_sales)) + 
+  geom_line(aes(group = city), alpha = 1/5) + 
+  geom_line(stat = "summary", fun.y = "mean", colour = "red") +
+  geom_smooth(method = "loess", se = FALSE)
+
+```
+
+
+**_Question 2_** If you look closely (e.g. + xlim(2008, 2012)) at the long-term trend you’ll
+notice a weird pattern in 2009–2011. It looks like there was a big dip in
+2010. Is this dip “real”? (i.e. can you spot it in the original data)
+
+**_Question 3_** What other variables in the TX housing data show strong seasonal effects?
+Does this technique help to remove them?
+
+**_Question 4_** Not all the cities in this data set have complete time series. Use your dplyr
+skills to figure out how much data each city is missing. Display the results
+with a visualisation.
+
+**_Question 5_** Replicate the computation that stat summary() did with dplyr so you can
+plot the data “by hand”.

@@ -1,0 +1,58 @@
+---
+title: "ggplot2_solutions_chapter12"
+author: "Nade Kang"
+date: "July 14, 2018"
+output: html_document
+---
+
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 12 Programming with ggplot2
+
+## *Exercise 12.2.1*
+### Load Packages
+```{r setup, results='hide'}
+library(tidyverse)
+library(ggthemes)
+```
+
+**_Question 1_** Create an object that represents a pink histogram with 100 bins.
+
+We name this object as hist100:
+```{r e.12.2.1.1}
+hist100 <- geom_histogram(bins  = 100, color = "pink", fill = "pink")
+
+# Test this object with diamonds:
+ggplot(diamonds, aes(price)) +
+  hist100
+```
+
+
+**_Question 2_** Create an object that represents a fill scale with the Blues ColorBrewer
+palette.
+
+P138 in textbook, we just use the default scale_fill_brewer() so it is blue.
+
+```{r e.12.2.1.2}
+bluePalette <- scale_fill_brewer()
+
+# Test this object with diamonds dataset:
+ggplot(diamonds, aes(cut, price, fill = cut)) +
+  geom_bar(stat = "summary", fun.y = "mean") +
+  scale_fill_brewer()
+```
+
+
+**_Question 3_** Read the source code for theme grey(). What are its arguments? How does
+it work?
+
+```{r}
+theme_grey
+```
+
+
+**_Question 4_** Create scale colour wesanderson(). It should have a parameter to pick the
+palette from the wesanderson package, and create either a continuous or
+discrete scale.
+
+Package not available for R3.4.4
+

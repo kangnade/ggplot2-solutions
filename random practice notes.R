@@ -194,6 +194,10 @@ fit <- lm(Murder ~ Population + Illiteracy + Income + Frost, data = states)
 summary(fit)
 qqPlot(fit, labels = row.names(states), id.method = "identify", simulate = TRUE, main = "Q-Q Plot")
 
+x_values <- c(Murder, Population, Illiteracy, Income, Frost)
+
+plot(Murder ~ Population + Illiteracy + Population + Income + Frost, data = states)
+
 library(car)
 states <- as.data.frame(state.x77[,c("Murder", "Population",
                                      "Illiteracy", "Income", "Frost")])
@@ -234,3 +238,13 @@ ggplot(color_cut, aes(color, price))  +
 ggplot(color_cut, aes(color, rel_price)) +
   geom_line(aes(group = cut), colour = "grey80") +
   geom_point(aes(colour = cut))
+?diamonds
+
+mtcars
+new <- mtcars %>%
+  gather(-mpg, -hp, -cyl, key = "var", value = "value")
+View(mtcars)
+View(new)
+geom_histogram
+install.packages("weanderson")
+library(weanderson)
