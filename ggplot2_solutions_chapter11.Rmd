@@ -1,0 +1,78 @@
+---
+title: "ggplot2_solutions_chapter11"
+author: "Nade Kang"
+date: "July 14, 2018"
+output: html_document
+---
+
+# Solution Manual for ggplot2 Elegant Graphics for Data Analysis by Hadley Wickham
+# ggplot2 Chpater 11 Modeling for Visualization
+
+## *Exercise 11.2.1*
+### Load Packages
+```{r setup, results='hide'}
+library(tidyverse)
+library(ggthemes)
+```
+
+**_Question 1_** What happens if you repeat the above analysis with all diamonds? (Not
+just all diamonds with two or fewer carats). What does the strange geometry
+of log(carat) vs relative price represent? What does the diagonal line
+without any points represent?
+
+Applying the analysis to all diamonds, without filtering diamonds with <= 2 carat.
+```{r e.11.2.1}
+diamonds_all <- diamonds %>% 
+  mutate(lprice = log2(price),
+         lcarat = log2(carat))
+head(select(diamonds_all, carat, price, lcarat, lprice))
+
+ggplot(diamonds_all, aes(lcarat, lprice)) +
+  geom_bin2d() +
+  geom_smooth(method = "lm", color = "linen", size = 2, se = FALSE) +
+  ggtitle("Log Price Plotted Against Log Carat\n for All Diamonds") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+mod_all <- lm(lprice ~ lcarat, data = diamonds_all)
+coef(summary(mod_all))
+
+diamonds_all <- diamonds_all %>% 
+  mutate(rel_price = resid(mod_all))
+
+ggplot(diamonds_all, aes(lcarat, rel_price)) +
+  geom_bin2d() +
+  ggtitle("Relative Price Plotted Against Log Carat\n for All Diamonds") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+As the log carat increases, the relative price drops gradually below zero. This means that 
+diamonds with large carat are cheapter than expected.
+
+**_Question 2_** made an unsupported assertion that lower-quality diamonds tend to be
+larger. Support my claim with a plot.
+
+```{r e.11.2.2}
+ggplot(diamonds_all, aes(color, carat)) +
+  geom_boxplot(aes(color = cut))
+```
+
+Indeed, from this boxplot of carat against color with cut, we can clearly see that,
+judging from color, D(the best) has smaller carat, while H, I and J have a larger carat.
+In addition, Fair cut is generally larger than other cuts in terms of carat.
+
+**_Question 3_** Can you create a plot that simultaneously shows the effect of colour, cut,
+and clarity on relative price? If there’s too much information to show on
+one plot, think about how you might create a sequence of plots to convey
+the same message.
+
+We can use facet_wrap() to help with the plot:
+
+```{r e.11.2.2}
+ggplot(diamonds_all, aes(cut, rel_price)) +
+  geom_boxplot(aes(color = color)) +
+  facet_wrap(~clarity)
+```
+
+
+**_Question 4_** How do depth and table relate to the relative price?

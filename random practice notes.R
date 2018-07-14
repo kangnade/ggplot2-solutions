@@ -182,3 +182,55 @@ mean(movies$length)
 
 runif(100)
 ?runif
+?qqplot
+?id.method
+?gvlma
+
+library(car)
+states <- as.data.frame(state.x77[, c("Murder", "Population", "Illiteracy",
+                                      "Income", "Frost")])
+states
+fit <- lm(Murder ~ Population + Illiteracy + Income + Frost, data = states)
+summary(fit)
+qqPlot(fit, labels = row.names(states), id.method = "identify", simulate = TRUE, main = "Q-Q Plot")
+
+library(car)
+states <- as.data.frame(state.x77[,c("Murder", "Population",
+                                     "Illiteracy", "Income", "Frost")])
+fit <- lm(Murder ~ Population + Illiteracy + Income + Frost, data=states)
+qqPlot(fit, labels=row.names(states), id.method="identify",
+       simulate=TRUE, main="Q-Q Plot")
+
+
+diamonds2 <- diamonds %>% 
+  filter(carat <= 2) %>% 
+  mutate(lcarat = log2(carat),
+         lprice = log2(price))
+diamonds2
+
+ggplot(diamonds2, aes(lcarat, lprice)) +
+  geom_bin2d() +
+  geom_smooth(method = "lm", color = "white", size = 2, se = FALSE)
+mod <- lm(lprice ~ lcarat, data = diamonds2)
+summary(mod)
+
+diamonds2 <- diamonds2 %>% 
+  mutate(rel_price = resid(mod))
+ggplot(diamonds2, aes(carat, rel_price)) +
+  geom_bin2d()
+xgrid <- seq(-2, 1, by = 1/3)
+xgrid
+data.frame(logx = xgrid, x = round(2 ^ xgrid, 2))
+color_cut <- diamonds2 %>%
+  group_by(color, cut) %>%
+  summarise(
+    price = mean(price),
+    rel_price = mean(rel_price)
+  )
+color_cut
+ggplot(color_cut, aes(color, price))  +
+  geom_line(aes(group = cut), colour = "grey80") +
+  geom_point(aes(colour = cut))
+ggplot(color_cut, aes(color, rel_price)) +
+  geom_line(aes(group = cut), colour = "grey80") +
+  geom_point(aes(colour = cut))
